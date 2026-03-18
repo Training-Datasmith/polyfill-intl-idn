@@ -18,10 +18,8 @@ final class DisallowedRanges
 {
     /**
      * @param int $codePoint
-     *
-     * @return bool
      */
-    public static function inRange($codePoint)
+    public static function inRange($codePoint): bool
     {
         if ($codePoint >= 128 && $codePoint <= 159) {
             return true;

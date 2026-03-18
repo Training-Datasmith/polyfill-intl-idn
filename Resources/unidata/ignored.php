@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return  [
   173 => true,
   847 => true,
   6155 => true,
@@ -270,4 +270,4 @@ return array (
   917997 => true,
   917998 => true,
   917999 => true,
-);
+];

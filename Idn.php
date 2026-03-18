@@ -139,11 +139,10 @@ final class Idn
      * @param string $domainName
      * @param int    $options
      * @param int    $variant
-     * @param array  $idna_info
      *
      * @return string|false
      */
-    public static function idn_to_ascii($domainName, $options = self::IDNA_DEFAULT, $variant = self::INTL_IDNA_VARIANT_UTS46, &$idna_info = [])
+    public static function idn_to_ascii($domainName, $options = self::IDNA_DEFAULT, $variant = self::INTL_IDNA_VARIANT_UTS46, array &$idna_info = [])
     {
         if (\PHP_VERSION_ID > 80400 && '' === $domainName) {
             throw new \ValueError('idn_to_ascii(): Argument #1 ($domain) cannot be empty');
@@ -196,11 +195,10 @@ final class Idn
      * @param string $domainName
      * @param int    $options
      * @param int    $variant
-     * @param array  $idna_info
      *
      * @return string|false
      */
-    public static function idn_to_utf8($domainName, $options = self::IDNA_DEFAULT, $variant = self::INTL_IDNA_VARIANT_UTS46, &$idna_info = [])
+    public static function idn_to_utf8($domainName, $options = self::IDNA_DEFAULT, $variant = self::INTL_IDNA_VARIANT_UTS46, array &$idna_info = [])
     {
         if (\PHP_VERSION_ID > 80400 && '' === $domainName) {
             throw new \ValueError('idn_to_utf8(): Argument #1 ($domain) cannot be empty');
@@ -229,10 +227,8 @@ final class Idn
 
     /**
      * @param string $label
-     *
-     * @return bool
      */
-    private static function isValidContextJ(array $codePoints, $label)
+    private static function isValidContextJ(array $codePoints, $label): bool
     {
         if (!isset(self::$virama)) {
             self::$virama = require __DIR__.\DIRECTORY_SEPARATOR.'Resources'.\DIRECTORY_SEPARATOR.'unidata'.\DIRECTORY_SEPARATOR.'virama.php';
@@ -274,10 +270,8 @@ final class Idn
      *
      * @param string              $input
      * @param array<string, bool> $options
-     *
-     * @return string
      */
-    private static function mapCodePoints($input, array $options, Info $info)
+    private static function mapCodePoints($input, array $options, Info $info): string
     {
         $str = '';
         $useSTD3ASCIIRules = $options['UseSTD3ASCIIRules'];
@@ -316,12 +310,10 @@ final class Idn
     /**
      * @see https://www.unicode.org/reports/tr46/#Processing
      *
-     * @param string              $domain
      * @param array<string, bool> $options
-     *
      * @return array<int, string>
      */
-    private static function process($domain, array $options, Info $info)
+    private static function process(string $domain, array $options, Info $info): array
     {
         // If VerifyDnsLength is not set, we are doing ToUnicode otherwise we are doing ToASCII and
         // we need to respect the VerifyDnsLength option.
@@ -393,7 +385,7 @@ final class Idn
      *
      * @param string $label
      */
-    private static function validateBidiLabel($label, Info $info)
+    private static function validateBidiLabel($label, Info $info): void
     {
         if (1 === preg_match(Regex::RTL_LABEL, $label)) {
             $info->bidiDomain = true;
@@ -461,7 +453,7 @@ final class Idn
     /**
      * @param array<int, string> $labels
      */
-    private static function validateDomainAndLabelLength(array $labels, Info $info)
+    private static function validateDomainAndLabelLength(array $labels, Info $info): void
     {
         $maxDomainSize = self::MAX_DOMAIN_SIZE;
         $length = \count($labels);
@@ -497,9 +489,8 @@ final class Idn
      *
      * @param string              $label
      * @param array<string, bool> $options
-     * @param bool                $canBeEmpty
      */
-    private static function validateLabel($label, Info $info, array $options, $canBeEmpty)
+    private static function validateLabel($label, Info $info, array $options, bool $canBeEmpty): void
     {
         if ('' === $label) {
             if (!$canBeEmpty && (!isset($options['VerifyDnsLength']) || $options['VerifyDnsLength'])) {
@@ -554,8 +545,10 @@ final class Idn
         foreach ($codePoints as $codePoint) {
             $data = self::lookupCodePointStatus($codePoint, $useSTD3ASCIIRules);
             $status = $data['status'];
-
-            if ('valid' === $status || (!$transitional && 'deviation' === $status)) {
+            if ('valid' === $status) {
+                continue;
+            }
+            if (!$transitional && 'deviation' === $status) {
                 continue;
             }
 
@@ -582,10 +575,8 @@ final class Idn
      * @see https://tools.ietf.org/html/rfc3492#section-6.2
      *
      * @param string $input
-     *
-     * @return string
      */
-    private static function punycodeDecode($input)
+    private static function punycodeDecode($input): string
     {
         $n = self::INITIAL_N;
         $out = 0;
@@ -670,10 +661,8 @@ final class Idn
      * @see https://tools.ietf.org/html/rfc3492#section-6.3
      *
      * @param string $input
-     *
-     * @return string
      */
-    private static function punycodeEncode($input)
+    private static function punycodeEncode($input): string
     {
         $n = self::INITIAL_N;
         $delta = 0;
@@ -763,12 +752,9 @@ final class Idn
      * @see https://tools.ietf.org/html/rfc3492#section-6.1
      *
      * @param int  $delta
-     * @param int  $numPoints
-     * @param bool $firstTime
      *
-     * @return int
      */
-    private static function adaptBias($delta, $numPoints, $firstTime)
+    private static function adaptBias($delta, int $numPoints, bool $firstTime): int
     {
         // xxx >> 1 is a faster way of doing intdiv(xxx, 2)
         $delta = $firstTime ? intdiv($delta, self::DAMP) : $delta >> 1;
@@ -785,11 +771,9 @@ final class Idn
 
     /**
      * @param int  $d
-     * @param bool $flag
      *
-     * @return string
      */
-    private static function encodeDigit($d, $flag)
+    private static function encodeDigit($d, bool $flag): string
     {
         return \chr($d + 22 + 75 * ($d < 26 ? 1 : 0) - (($flag ? 1 : 0) << 5));
     }
@@ -804,7 +788,7 @@ final class Idn
      *
      * @return array<int, int>
      */
-    private static function utf8Decode($input)
+    private static function utf8Decode($input): array
     {
         $bytesSeen = 0;
         $bytesNeeded = 0;
@@ -818,7 +802,7 @@ final class Idn
             $byte = \ord($input[$i]);
 
             if (0 === $bytesNeeded) {
-                if ($byte >= 0x00 && $byte <= 0x7F) {
+                if ($byte <= 0x7F) {
                     $codePoints[] = $byte;
 
                     continue;
@@ -892,7 +876,7 @@ final class Idn
      *
      * @return array{status: string, mapping?: string}
      */
-    private static function lookupCodePointStatus($codePoint, $useSTD3ASCIIRules)
+    private static function lookupCodePointStatus($codePoint, $useSTD3ASCIIRules): array
     {
         if (!self::$mappingTableLoaded) {
             self::$mappingTableLoaded = true;

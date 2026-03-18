@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return  [
   888 => true,
   889 => true,
   896 => true,
@@ -2635,4 +2635,4 @@ return array (
   1048575 => true,
   1114110 => true,
   1114111 => true,
-);
+];
