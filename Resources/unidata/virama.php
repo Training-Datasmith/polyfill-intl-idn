@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return  [
   2381 => 9,
   2509 => 9,

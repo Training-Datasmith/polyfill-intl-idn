@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return  [
   888 => true,
   889 => true,

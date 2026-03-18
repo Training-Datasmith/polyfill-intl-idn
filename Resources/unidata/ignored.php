@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return  [
   173 => true,
   847 => true,
